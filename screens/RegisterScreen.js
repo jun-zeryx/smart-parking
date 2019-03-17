@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Left, Right, Body, Title, Icon, Toast } from 'native-base';
+import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Left, Right, Body, Title, Icon, Toast, Spinner } from 'native-base';
 
 export default class RegisterScreen extends React.Component {
   static navigationOptions = {
@@ -123,7 +123,9 @@ export default class RegisterScreen extends React.Component {
       if (response.status == 200) {
         this.props.navigation.goBack()
       } else {
-        alert(this.state.apiData.message)
+        Toast.show({
+                text: this.state.apiData.message
+              })
       }
     } catch (error) {
       console.error(error);

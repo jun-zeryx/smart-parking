@@ -1,6 +1,6 @@
 import React from 'react';
 import { Image, Platform, ScrollView, StyleSheet, TouchableOpacity, View, Dimensions,} from 'react-native';
-import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Left, Right, Body, Title, Icon } from 'native-base';
+import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Left, Right, Body, Title, Icon, Toast } from 'native-base';
 import { Constants, MapView, Location, Permissions } from 'expo';
 
 export default class MapScreen extends React.Component {
@@ -8,13 +8,20 @@ export default class MapScreen extends React.Component {
     header: null,
   };
 
-  state = {
-  locationResult: null,
-  location: {coords: { latitude: 0, longitude: 0}},
-};
+constructor() {
+  super();
+  this.getParkingInfo = this.getParkingInfo.bind(this);
+  this.state = {
+    locationResult: null,
+    location: {coords: { latitude: 0, longitude: 0}},
+    apiData: null,
+    parkingInfo:[],
+  }
+}
 
 componentDidMount() {
   this._getLocationAsync();
+  this.getParkingInfo();
 }
 
 _handleMapRegionChange = mapRegion => {
@@ -34,7 +41,53 @@ _getLocationAsync = async () => {
  this.setState({ locationResult: JSON.stringify(location), location, });
 };
 
+async getParkingInfo() {
+  let httpData = {
+    method: 'GET',
+    headers: {
+      Authorization: global.accessToken,
+      Accept: "application/json",
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  }
+
+  try {
+    let response = await fetch(global.serverUrl + 'api/user/parkingApi', httpData);
+    let responseJson = await response.json();
+    this.setState({apiData: responseJson});
+    this.setState({loading:false});
+    if (response.status == 200) {
+      this.setState({parkingInfo: this.state.apiData.data});
+    } else {
+      Toast.show({
+              text: this.state.apiData.message
+            })
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
   render() {
+
+    mapMarkers = this.state.parkingInfo.map((item) => {
+      //We need to return the corresponding mapping for each item too.
+      return (
+          // <View key={item.title} style={ styles.container }>
+          //   <Text style={styles.title}>
+          //     {item.title}
+          //   </Text>
+          // </View>
+
+          <MapView.Marker
+            key = {item.id}
+            coordinate={item.coordinate}
+            title={item.name}
+            description={"Space left: "+item.space_left + "/" + item.space}
+            />
+        );
+     });
+
     const { width, height } = Dimensions.get('window');
     const ratio = width / height;
     const delta = 0.0043;
@@ -60,11 +113,7 @@ _getLocationAsync = async () => {
               latitudeDelta: delta,
               longitudeDelta: delta * ratio }}>
 
-            <MapView.Marker
-              coordinate={this.state.location.coords}
-              title="My Marker"
-              description="Some description"
-              />
+              {mapMarkers}
           </MapView>
         </View>
 

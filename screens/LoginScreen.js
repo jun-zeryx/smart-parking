@@ -68,53 +68,51 @@ class LoginScreen extends Component {
 
   async doLogin() {
 
-    // if(this.state.username == null) {
-    //   Toast.show({
-    //           text: 'Please enter your username'
-    //         })
-    //   return
-    // }
-    // else if (this.state.password == null) {
-    //   Toast.show({
-    //           text: 'Please enter your password'
-    //         })
-    //   return
-    // }
-    //
-    // this.setState({loading:true});
-    // let httpData = {
-    //   method: 'POST',
-    //   headers: {
-    //   "Content-type": "application/json; charset=UTF-8"
-    //   },
-    //   body: JSON.stringify({
-    //     username: this.state.username,
-    //     password: this.state.password,
-    //     grant_type: 'password',
-    //     client_id: 2,
-    //     client_secret: 'rRQeAuqnsH3EV1lyiRvycCnVXO45egOgnMCQbO1s',
-    //     provider: 'users'
-    //   })
-    // }
-    //
-    // try {
-    //   let response = await fetch(global.serverUrl + 'oauth/token', httpData);
-    //   let responseJson = await response.json();
-    //   this.setState({apiData: responseJson});
-    //   this.setState({loading:false});
-    //   global.accessToken = this.state.apiData.token_type + " " +this.state.apiData.access_token
-    //
-    //   if (response.status == 200) {
-    //     global.accessToken = this.state.apiData.token_type + " " +this.state.apiData.access_token
-    //     this.props.navigation.navigate('Main')
-    //   } else {
-    //     alert(this.state.apiData.message)
-    //   }
-    //
-    // } catch (error) {
-    //   console.error(error);
-    // }
-    this.props.navigation.navigate('Main')
+    if(this.state.username == null) {
+      Toast.show({
+              text: 'Please enter your username'
+            })
+      return
+    }
+    else if (this.state.password == null) {
+      Toast.show({
+              text: 'Please enter your password'
+            })
+      return
+    }
+
+    this.setState({loading:true});
+    let httpData = {
+      method: 'POST',
+      headers: {
+      "Content-type": "application/json; charset=UTF-8"
+      },
+      body: JSON.stringify({
+        username: this.state.username,
+        password: this.state.password,
+        grant_type: 'password',
+        client_id: 2,
+        client_secret: 'rRQeAuqnsH3EV1lyiRvycCnVXO45egOgnMCQbO1s',
+        provider: 'users'
+      })
+    }
+
+    try {
+      let response = await fetch(global.serverUrl + 'oauth/token', httpData);
+      let responseJson = await response.json();
+      this.setState({apiData: responseJson});
+      this.setState({loading:false});
+      if (response.status == 200) {
+        global.accessToken = this.state.apiData.token_type + " " +this.state.apiData.access_token
+        this.props.navigation.navigate('Main')
+      } else {
+        Toast.show({
+                text: this.state.apiData.message
+              })
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   doRegister() {

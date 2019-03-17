@@ -7,7 +7,7 @@ export default class ScanScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
-  
+
   constructor() {
     super();
     this.state = {
@@ -32,23 +32,22 @@ export default class ScanScreen extends React.Component {
     return (
 
       <Container>
-      <Header>
-        <Left>
-          <Icon name='qrcode-scan' type='MaterialCommunityIcons' style={{color:'white'}}/>
-        </Left>
-        <Body>
-          <Title>Scan</Title>
-        </Body>
-        <Right />
-      </Header>
+        <Header>
+          <Left>
+            <Icon name='qrcode-scan' type='MaterialCommunityIcons' style={{color:'white'}}/>
+          </Left>
+          <Body>
+            <Title>Scan</Title>
+          </Body>
+          <Right />
+        </Header>
 
-      <View style={{ flex: 1 }}>
-        <BarCodeScanner
-          onBarCodeScanned={this.handleBarCodeScanned}
-          style={StyleSheet.absoluteFill}
-        />
-      </View>
-
+        <View style={{ flex: 1 }}>
+          <BarCodeScanner
+            onBarCodeScanned={this.handleBarCodeScanned}
+            style={StyleSheet.absoluteFill}>
+          </BarCodeScanner>
+        </View>
       </Container>
     );
   }
