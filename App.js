@@ -1,7 +1,12 @@
 import React from 'react';
+import { Root, StyleProvider, Container, Header } from "native-base";
 import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { AppLoading, Asset, Font, Icon } from 'expo';
 import AppNavigator from './navigation/AppNavigator';
+import getTheme from './native-base-theme/components';
+import material from './native-base-theme/variables/material';
+import commonColor from './native-base-theme/variables/commonColor';
+import platform from './native-base-theme/variables/platform';
 import './global.js';
 
 export default class App extends React.Component {
@@ -20,10 +25,14 @@ export default class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === 'android' && <StatusBar hidden />}
-          <AppNavigator />
-        </View>
+        <Container>
+        {Platform.OS === 'android' && <StatusBar hidden />}
+          <Root>
+            <StyleProvider style={getTheme(material)}>
+              <AppNavigator/>
+            </StyleProvider>
+          </Root>
+        </Container>
       );
     }
   }
@@ -41,6 +50,7 @@ export default class App extends React.Component {
         // to remove this if you are not using it in your app
         'space-mono': require('./assets/fonts/SpaceMono-Regular.ttf'),
         'Roboto_medium': require("native-base/Fonts/Roboto_medium.ttf"),
+        'Roboto': require("native-base/Fonts/Roboto.ttf"),
       }),
     ]);
   };
@@ -55,10 +65,3 @@ export default class App extends React.Component {
     this.setState({ isLoadingComplete: true });
   };
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-});

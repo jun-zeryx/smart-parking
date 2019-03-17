@@ -1,16 +1,7 @@
 import React from 'react';
-import {
-  Image,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Left, Right, Body, Title, } from 'native-base';
+import { Image, Platform, ScrollView, StyleSheet, TouchableOpacity, View, Dimensions,} from 'react-native';
+import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Left, Right, Body, Title, Icon } from 'native-base';
 import { Constants, MapView, Location, Permissions } from 'expo';
-
-import { MonoText } from '../components/StyledText';
 
 export default class MapScreen extends React.Component {
   static navigationOptions = {
@@ -18,9 +9,8 @@ export default class MapScreen extends React.Component {
   };
 
   state = {
-  mapRegion: { latitude: 37.78825, longitude: -122.4324, latitudeDelta: 0.0922, longitudeDelta: 0.0421 },
   locationResult: null,
-  location: {coords: { latitude: 37.78825, longitude: -122.4324}},
+  location: {coords: { latitude: 0, longitude: 0}},
 };
 
 componentDidMount() {
@@ -45,52 +35,53 @@ _getLocationAsync = async () => {
 };
 
   render() {
+    const { width, height } = Dimensions.get('window');
+    const ratio = width / height;
+    const delta = 0.0043;
+
     return (
       <Container>
-        <Header>
-          <Left/>
-          <Body>
-            <Title>Login</Title>
-          </Body>
-          <Right />
-        </Header>
+      <Header>
+        <Left>
+          <Icon name='map' type='FontAwesome' style={{color:'white'}}/>
+        </Left>
+        <Body>
+          <Title>Map</Title>
+        </Body>
+        <Right />
+      </Header>
 
         <View style={styles.container}>
-        <MapView
-          style={{ alignSelf: 'stretch', height: 400 }}
-          region={{ latitude: this.state.location.coords.latitude, longitude: this.state.location.coords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421 }}
-        >
-    <MapView.Marker
-      coordinate={this.state.location.coords}
-      title="My Marker"
-      description="Some description"
-    />
-        </MapView>
+          <MapView
+            style={styles.map}
+            region={{
+              latitude: this.state.location.coords.latitude,
+              longitude: this.state.location.coords.longitude,
+              latitudeDelta: delta,
+              longitudeDelta: delta * ratio }}>
 
-        <Text>
-          Location: {this.state.locationResult}
-        </Text>
-
-      </View>
+            <MapView.Marker
+              coordinate={this.state.location.coords}
+              title="My Marker"
+              description="Some description"
+              />
+          </MapView>
+        </View>
 
       </Container>
+
     );
   }
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
+    alignItems: 'center',
   },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#34495e',
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
 });
