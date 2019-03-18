@@ -2,6 +2,7 @@ import React from 'react';
 import { Image, Platform, ScrollView, StyleSheet, TouchableOpacity, View, Dimensions,} from 'react-native';
 import { Container, Header, Content, Form, Item, Input, Label, Button, Text, Left, Right, Body, Title, Icon, Toast } from 'native-base';
 import { Constants, MapView, Location, Permissions } from 'expo';
+import { showLocation } from 'react-native-map-link'
 
 export default class MapScreen extends React.Component {
   static navigationOptions = {
@@ -11,6 +12,7 @@ export default class MapScreen extends React.Component {
 constructor() {
   super();
   this.getParkingInfo = this.getParkingInfo.bind(this);
+  this.refreshMap = this.refreshMap.bind(this);
   this.state = {
     locationResult: null,
     location: {coords: { latitude: 0, longitude: 0}},
@@ -27,6 +29,19 @@ componentDidMount() {
 _handleMapRegionChange = mapRegion => {
   this.setState({ mapRegion });
 };
+
+_onMarkerPress = markerData => {
+   console.log(markerData.nativeEvent.coordinate);
+   showLocation({
+    latitude: markerData.nativeEvent.coordinate.latitude,
+    longitude: markerData.nativeEvent.coordinate.longitude,
+  })
+};
+
+refreshMap() {
+  this.getParkingInfo();
+  this.forceUpdate();
+}
 
 _getLocationAsync = async () => {
  let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -84,6 +99,7 @@ async getParkingInfo() {
             coordinate={item.coordinate}
             title={item.name}
             description={"Space left: "+item.space_left + "/" + item.space}
+            onPress={this._onMarkerPress}
             />
         );
      });
@@ -101,17 +117,25 @@ async getParkingInfo() {
         <Body>
           <Title>Map</Title>
         </Body>
-        <Right />
+        <Right>
+          <Button transparent onPress={this.refreshMap}>
+            <Icon name='refresh' type='MaterialCommunityIcons'/>
+          </Button>
+        </Right>
       </Header>
 
         <View style={styles.container}>
           <MapView
+            provider='google'
             style={styles.map}
             region={{
               latitude: this.state.location.coords.latitude,
               longitude: this.state.location.coords.longitude,
               latitudeDelta: delta,
-              longitudeDelta: delta * ratio }}>
+              longitudeDelta: delta * ratio }}
+              showsUserLocation={true}
+              showsMyLocationButton={true}
+              loadingEnabled={true}>
 
               {mapMarkers}
           </MapView>

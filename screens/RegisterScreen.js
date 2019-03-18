@@ -45,7 +45,7 @@ export default class RegisterScreen extends React.Component {
           <Body>
             <Title>Register</Title>
           </Body>
-          <Right />
+          <Right/>
         </Header>
 
         <Content>
